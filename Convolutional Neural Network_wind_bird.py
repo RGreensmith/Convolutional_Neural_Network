@@ -2,47 +2,9 @@
 
 # Importing the libraries
 import tensorflow as tf
-# ImageDataGenerator class generates batches of tensor image data with real-time data augmentation
-from keras.preprocessing.image import ImageDataGenerator
+from getProcessedImages import getProcessedImages
 
-tf.__version__
-
-######## Part 1 - Data Preprocessing
-
-### Preprocessing the Training set
-# if you don't transform the training set then you will end up with overfitting.
-# The transformations are geometrical, and are called image augmentation.
-# trying different transformations can change the confidence levels of the cnn
-# rescale parameter is for feature scaling, applying feature scaling to every pixel by dividing their value by 255.
-# shear_range, zoom_range and horizontal_flip parameters are transformations.
-
-train_datagen = ImageDataGenerator(
-    rescale = 1./255,
-    shear_range = 0.2,
-    zoom_range = 0.2,
-    horizontal_flip = True
-)
-
-training_set = train_datagen.flow_from_directory(
-    'test_set',
-    target_size=(64, 64),
-    batch_size = 32,
-    class_mode = 'binary'
-)
-
-# Preprocessing the Test set
-test_datagen = ImageDataGenerator(
-    rescale=1./255
-)
-
-test_set = test_datagen.flow_from_directory(
-    'train_set',
-    target_size=(64, 64),
-    batch_size=32,
-    class_mode='binary'
-)
-
-######## Part 2 - Building the CNN
+######## Part 1 - Building the CNN
 
 # Initialising the CNN
 cnn = tf.keras.models.Sequential()
@@ -67,15 +29,19 @@ cnn.add(tf.keras.layers.Dense(units = 128, activation = 'relu'))
 # Step 5 - Output Layer
 cnn.add(tf.keras.layers.Dense(units=1, activation='sigmoid'))
 
-######## Part 3 - Training the CNN
+######## Part 2 - Training the CNN
 
 # Compiling the CNN
 cnn.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 # Training the CNN on the Training set and evaluating it on the Test set
+
+test_set = getProcessedImages()
+training_set = getProcessedImages(isTest=False)
+
 cnn.fit(x = training_set, validation_data = test_set, epochs = 25)
 
-######## Part 4 - Making a single prediction
+######## Part 3 - Making a single prediction
 
 import numpy as np
 from keras.preprocessing import image
