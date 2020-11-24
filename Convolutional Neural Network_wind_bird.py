@@ -3,6 +3,7 @@
 # Importing the libraries
 import tensorflow as tf
 from getProcessedImages import getProcessedImages
+from imageIdentify import imageIdentify
 
 ######## Part 1 - Building the CNN
 
@@ -41,37 +42,7 @@ training_set = getProcessedImages(isTest=False)
 
 cnn.fit(x = training_set, validation_data = test_set, epochs = 25)
 
-######## Part 3 - Making a single prediction
+######## Part 3 - Making predictions
 
-import numpy as np
-from keras.preprocessing import image
-test_image = image.load_img(
-    'single_prediction/w_or_b_1.JPG',
-     target_size = (64, 64))
-
-test_image = image.img_to_array(test_image)
-test_image = np.expand_dims(test_image, axis = 0)
-
-result = cnn.predict(test_image)
-print(training_set.class_indices)
-if result[0][0] == 1:
-    prediction = 'bird'
-else :
-    prediction = 'windsurfer'
-
-print(prediction)
-
-test_image = image.load_img(
-    'single_prediction/w_or_b_2.jpg',
-    target_size=(64, 64))
-
-test_image = image.img_to_array(test_image)
-test_image = np.expand_dims(test_image, axis=0)
-result = cnn.predict(test_image)
-print(training_set.class_indices)
-if result[0][0] == 1:
-    prediction = 'bird'
-else:
-    prediction = 'windsurfer'
-
-print(prediction)
+identified_images = imageIdentify('single_prediction/', cnn, training_set)
+print(identified_images)
